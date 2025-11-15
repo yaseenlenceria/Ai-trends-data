@@ -162,7 +162,7 @@ const FALLBACK_TOOLS: Tool[] = [
     name: "Claude",
     slug: "claude",
     tagline: "Constitutional AI assistant focused on being helpful, harmless, and honest",
-    description: "Claude is Anthropic's AI assistant built on constitutional AI principles. It excels at long-form content, analysis, and maintaining context in extended conversations.",
+    description: "Claude is Anthropic's advanced AI assistant built on constitutional AI principles. It excels at long-form content creation, detailed analysis, coding tasks, and maintaining context in extended conversations. Claude is designed to be helpful, harmless, and honest, with strong capabilities in reasoning and creative tasks.",
     logo: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=128&h=128&fit=crop",
     category: "AI Assistant",
     categoryId: "chat",
@@ -172,13 +172,42 @@ const FALLBACK_TOOLS: Tool[] = [
     viewsToday: 2841,
     trendPercentage: 34.2,
     website: "https://claude.ai",
+    twitter: "https://twitter.com/AnthropicAI",
+    screenshots: [
+      "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&h=675&fit=crop",
+      "https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?w=1200&h=675&fit=crop",
+    ],
+    trendData: [
+      { date: "Mon", views: 72000 },
+      { date: "Tue", views: 74500 },
+      { date: "Wed", views: 76800 },
+      { date: "Thu", views: 75200 },
+      { date: "Fri", views: 79500 },
+      { date: "Sat", views: 81000 },
+      { date: "Sun", views: 78145 },
+    ],
+    pricing: {
+      model: "freemium",
+      plans: [
+        {
+          name: "Free",
+          price: "$0/month",
+          features: ["Claude 3 Haiku access", "Standard features", "Limited usage"]
+        },
+        {
+          name: "Pro",
+          price: "$20/month",
+          features: ["Claude 3 Opus access", "5x more usage", "Priority access", "Early feature access"]
+        }
+      ]
+    }
   },
   {
     id: "3",
     name: "Perplexity AI",
     slug: "perplexity",
     tagline: "AI-powered answer engine for complex questions with real-time sources",
-    description: "Perplexity combines AI with real-time search to provide accurate, sourced answers. Perfect for research and getting up-to-date information.",
+    description: "Perplexity AI is an answer engine that combines the power of large language models with real-time web search to provide accurate, sourced answers to your questions. Unlike traditional chatbots, Perplexity cites its sources and can access the latest information from the internet. Perfect for research, fact-checking, and getting up-to-date information on any topic.",
     logo: "https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?w=128&h=128&fit=crop",
     category: "AI Assistant",
     categoryId: "chat",
@@ -188,13 +217,43 @@ const FALLBACK_TOOLS: Tool[] = [
     viewsToday: 1876,
     trendPercentage: 89.7,
     website: "https://perplexity.ai",
+    twitter: "https://twitter.com/perplexity_ai",
     isNew: true,
+    screenshots: [
+      "https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?w=1200&h=675&fit=crop",
+      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=675&fit=crop",
+    ],
+    trendData: [
+      { date: "Mon", views: 38000 },
+      { date: "Tue", views: 39500 },
+      { date: "Wed", views: 40200 },
+      { date: "Thu", views: 41000 },
+      { date: "Fri", views: 42800 },
+      { date: "Sat", views: 44500 },
+      { date: "Sun", views: 42456 },
+    ],
+    pricing: {
+      model: "freemium",
+      plans: [
+        {
+          name: "Free",
+          price: "$0/month",
+          features: ["5 Pro searches/day", "Standard AI model", "Basic features"]
+        },
+        {
+          name: "Pro",
+          price: "$20/month",
+          features: ["Unlimited Pro searches", "GPT-4 & Claude 3", "File upload", "API access"]
+        }
+      ]
+    }
   },
   {
     id: "4",
     name: "Google Gemini",
     slug: "google-gemini",
     tagline: "Google's most capable AI model for text, code, and multimodal tasks",
+    description: "Google Gemini is a family of multimodal AI models developed by Google DeepMind. It can understand and generate text, code, images, audio, and video. Gemini Ultra is Google's most capable model, designed to compete with GPT-4 and Claude, with advanced reasoning capabilities and the ability to process multiple types of information simultaneously.",
     logo: "https://images.unsplash.com/photo-1573164713988-8665fc963095?w=128&h=128&fit=crop",
     category: "AI Assistant",
     categoryId: "chat",
@@ -204,6 +263,34 @@ const FALLBACK_TOOLS: Tool[] = [
     viewsToday: 2341,
     trendPercentage: 45.3,
     website: "https://gemini.google.com",
+    screenshots: [
+      "https://images.unsplash.com/photo-1573164713988-8665fc963095?w=1200&h=675&fit=crop",
+      "https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?w=1200&h=675&fit=crop",
+    ],
+    trendData: [
+      { date: "Mon", views: 52000 },
+      { date: "Tue", views: 53500 },
+      { date: "Wed", views: 54800 },
+      { date: "Thu", views: 55200 },
+      { date: "Fri", views: 57000 },
+      { date: "Sat", views: 58500 },
+      { date: "Sun", views: 56234 },
+    ],
+    pricing: {
+      model: "freemium",
+      plans: [
+        {
+          name: "Free",
+          price: "$0/month",
+          features: ["Gemini Pro access", "Standard features", "Google integration"]
+        },
+        {
+          name: "Advanced",
+          price: "$19.99/month",
+          features: ["Gemini Ultra access", "2M token context", "Priority access", "Google One benefits"]
+        }
+      ]
+    }
   },
   
   // Image Generation
