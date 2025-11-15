@@ -1472,15 +1472,76 @@ const FALLBACK_TOOLS: Tool[] = [
   },
 ];
 
+// Calculate actual tool counts from MOCK_TOOLS
+const getCategoryToolCount = (categoryId: string) => {
+  return MOCK_TOOLS.filter(tool => tool.categoryId === categoryId).length;
+};
+
 const MOCK_CATEGORIES: Category[] = [
-  { id: "chat", name: "AI Assistant", icon: MessageSquare, toolCount: 124 },
-  { id: "image", name: "Image Generation", icon: Image, toolCount: 89 },
-  { id: "video", name: "Video Generation", icon: Video, toolCount: 45 },
-  { id: "code", name: "Code Assistant", icon: Code, toolCount: 67 },
-  { id: "audio", name: "Audio & Voice", icon: Mic, toolCount: 53 },
-  { id: "writing", name: "Writing", icon: FileText, toolCount: 98 },
-  { id: "data", name: "Data Analysis", icon: Database, toolCount: 34 },
-  { id: "automation", name: "Automation", icon: Zap, toolCount: 76 },
+  {
+    id: "chat",
+    name: "AI Assistant",
+    slug: "ai-assistant",
+    icon: MessageSquare,
+    toolCount: getCategoryToolCount("chat"),
+    description: "Conversational AI assistants and chatbots powered by advanced language models"
+  },
+  {
+    id: "image",
+    name: "Image Generation",
+    slug: "image-generation",
+    icon: Image,
+    toolCount: getCategoryToolCount("image"),
+    description: "AI-powered tools for creating, editing, and enhancing images and artwork"
+  },
+  {
+    id: "video",
+    name: "Video Generation",
+    slug: "video-generation",
+    icon: Video,
+    toolCount: getCategoryToolCount("video"),
+    description: "Create and edit videos using artificial intelligence and automation"
+  },
+  {
+    id: "code",
+    name: "Code Assistant",
+    slug: "code-assistant",
+    icon: Code,
+    toolCount: getCategoryToolCount("code"),
+    description: "AI-powered coding assistants that help developers write better code faster"
+  },
+  {
+    id: "audio",
+    name: "Audio & Voice",
+    slug: "audio-voice",
+    icon: Mic,
+    toolCount: getCategoryToolCount("audio"),
+    description: "Voice synthesis, audio generation, and sound enhancement tools"
+  },
+  {
+    id: "writing",
+    name: "Writing",
+    slug: "writing",
+    icon: FileText,
+    toolCount: getCategoryToolCount("writing"),
+    description: "AI writing assistants for content creation, editing, and improvement"
+  },
+  {
+    id: "data",
+    name: "Data Analysis",
+    slug: "data-analysis",
+    icon: Database,
+    toolCount: getCategoryToolCount("data"),
+    description: "Analyze and visualize data with AI-powered insights and automation"
+  },
+  {
+    id: "automation",
+    name: "Automation",
+    slug: "automation",
+    icon: Zap,
+    toolCount: getCategoryToolCount("automation"),
+    description: "Workflow automation and integration tools enhanced with AI capabilities"
+  },
 ];
 
 const MOCK_SPONSORS: Sponsor[] = [
@@ -1510,16 +1571,8 @@ const MOCK_SPONSORS: Sponsor[] = [
   },
 ];
 
-const FALLBACK_CATEGORIES: Category[] = [
-  { id: "chat", name: "AI Assistant", slug: "chat", icon: MessageSquare, toolCount: 0 },
-  { id: "image", name: "Image Generation", slug: "image", icon: Image, toolCount: 0 },
-  { id: "video", name: "Video Generation", slug: "video", icon: Video, toolCount: 0 },
-  { id: "code", name: "Code Assistant", slug: "code", icon: Code, toolCount: 0 },
-  { id: "audio", name: "Audio & Voice", slug: "audio", icon: Mic, toolCount: 0 },
-  { id: "writing", name: "Writing", slug: "writing", icon: FileText, toolCount: 0 },
-  { id: "data", name: "Data Analysis", slug: "data", icon: Database, toolCount: 0 },
-  { id: "automation", name: "Automation", slug: "automation", icon: Zap, toolCount: 0 },
-];
+// Use MOCK_CATEGORIES as fallback with actual tool counts
+const FALLBACK_CATEGORIES: Category[] = MOCK_CATEGORIES;
 
 const FALLBACK_SPONSORS: Sponsor[] = [];
 
