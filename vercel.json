@@ -1,15 +1,26 @@
 {
   "buildCommand": "npm run vercel-build",
   "outputDirectory": "dist/public",
+  "installCommand": "npm install",
+  "framework": null,
   "rewrites": [
     {
-      "source": "/api/:path*",
+      "source": "/api/(.*)",
       "destination": "/api"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
     }
   ],
-  "framework": null
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
 }
