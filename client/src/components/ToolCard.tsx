@@ -1,7 +1,6 @@
 import { ArrowUpRight, ArrowUp } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import TrendBadge from "./TrendBadge";
 
@@ -74,14 +73,12 @@ export default function ToolCard({
             {views.toLocaleString()} views
           </div>
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="opacity-0 group-hover:opacity-100 transition-opacity"
-          data-testid={`button-view-tool-${id}`}
+        <div
+          className="w-8 h-8 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+          data-testid={`icon-view-tool-${id}`}
         >
           <ArrowUpRight className="w-4 h-4" />
-        </Button>
+        </div>
       </div>
       </Card>
     </Link>
