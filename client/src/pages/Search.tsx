@@ -4,80 +4,23 @@ import ToolCard from "@/components/ToolCard";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useData } from "@/context/DataContext";
 
 export default function Search() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  
+  const { tools, categories } = useData();
 
-  const allTools = [
-    {
-      id: "chatgpt",
-      name: "ChatGPT",
-      tagline: "Conversational AI that understands and generates human-like text",
-      logo: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=128&h=128&fit=crop",
-      category: "AI Assistant",
-      upvotes: 1247,
-      views: 45632,
-      trendPercentage: 24.5,
-    },
-    {
-      id: "midjourney",
-      name: "Midjourney",
-      tagline: "AI art generator creating stunning images from text descriptions",
-      logo: "https://images.unsplash.com/photo-1686191128892-c21c4a86a8c6?w=128&h=128&fit=crop",
-      category: "Image Generation",
-      upvotes: 892,
-      views: 32145,
-      trendPercentage: 156.8,
-      isNew: true,
-    },
-    {
-      id: "copilot",
-      name: "GitHub Copilot",
-      tagline: "AI pair programmer that helps you write code faster",
-      logo: "https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?w=128&h=128&fit=crop",
-      category: "Code Assistant",
-      upvotes: 1056,
-      views: 38421,
-      trendPercentage: 42.1,
-    },
-    {
-      id: "suno",
-      name: "Suno AI",
-      tagline: "Generate music and songs from text prompts",
-      logo: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=128&h=128&fit=crop",
-      category: "Audio & Voice",
-      upvotes: 423,
-      views: 15234,
-      trendPercentage: 289.4,
-      isNew: true,
-    },
-    {
-      id: "runway",
-      name: "Runway ML",
-      tagline: "Creative tools powered by machine learning for video editing",
-      logo: "https://images.unsplash.com/photo-1492619375914-88005aa9e8fb?w=128&h=128&fit=crop",
-      category: "Video Generation",
-      upvotes: 634,
-      views: 18423,
-      trendPercentage: 178.2,
-    },
-    {
-      id: "perplexity",
-      name: "Perplexity AI",
-      tagline: "AI-powered answer engine for complex questions",
-      logo: "https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?w=128&h=128&fit=crop",
-      category: "AI Assistant",
-      upvotes: 512,
-      views: 21456,
-      trendPercentage: 134.7,
-    },
-  ];
-
-  const filteredTools = allTools.filter((tool) => {
+  const filteredTools = tools.filter((tool) => {
     const matchesSearch = tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          tool.tagline.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesSearch;
+    const matchesCategory = categoryFilter === "all" || tool.categoryId === categoryFilter;
+    const matchesFilter = filter === "all" || 
+                         (filter === "new" && tool.isNew) ||
+                         (filter === "trending" && tool.trendPercentage > 50);
+    return matchesSearch && matchesCategory && matchesFilter;
   });
 
   return (
@@ -105,16 +48,15 @@ export default function Search() {
           </Tabs>
 
           <div className="flex gap-4">
-            <Select defaultValue="all">
+            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
               <SelectTrigger className="w-[180px]" data-testid="select-category-filter">
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Categories</SelectItem>
-                <SelectItem value="ai-assistant">AI Assistant</SelectItem>
-                <SelectItem value="image-generation">Image Generation</SelectItem>
-                <SelectItem value="video-generation">Video Generation</SelectItem>
-                <SelectItem value="code-assistant">Code Assistant</SelectItem>
+                {categories.map(cat => (
+                  <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
 
