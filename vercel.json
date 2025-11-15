@@ -1,6 +1,8 @@
 {
   "buildCommand": "npm run vercel-build",
   "outputDirectory": "dist/public",
+  "installCommand": "npm install",
+  "framework": null,
   "rewrites": [
     {
       "source": "/api/:path*",
@@ -10,6 +12,5 @@
       "source": "/(.*)",
       "destination": "/index.html"
     }
-  ],
-  "framework": null
+  ]
 }
