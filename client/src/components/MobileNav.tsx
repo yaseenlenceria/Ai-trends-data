@@ -20,33 +20,33 @@ export default function MobileNav() {
           
           if (isPrimary) {
             return (
-              <Link key={href} href={href}>
-                <a 
-                  className="flex flex-col items-center gap-1 relative"
-                  data-testid={`link-mobile-${label.toLowerCase()}`}
-                >
-                  <div className="w-12 h-12 -mt-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg">
-                    <Icon className="w-6 h-6" />
-                  </div>
-                  <span className="text-xs font-medium">{label}</span>
-                </a>
+              <Link 
+                key={href} 
+                href={href}
+                className="flex flex-col items-center gap-1 relative"
+                data-testid={`link-mobile-${label.toLowerCase()}`}
+              >
+                <div className="w-12 h-12 -mt-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg">
+                  <Icon className="w-6 h-6" />
+                </div>
+                <span className="text-xs font-medium">{label}</span>
               </Link>
             );
           }
 
           return (
-            <Link key={href} href={href}>
-              <a 
-                className={`flex flex-col items-center gap-1 px-3 py-2 rounded-md transition-colors ${
-                  isActive 
-                    ? "text-primary" 
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-                data-testid={`link-mobile-${label.toLowerCase()}`}
-              >
-                <Icon className="w-5 h-5" />
-                <span className="text-xs font-medium">{label}</span>
-              </a>
+            <Link 
+              key={href} 
+              href={href}
+              className={`flex flex-col items-center gap-1 px-3 py-2 rounded-md transition-colors ${
+                isActive 
+                  ? "text-primary" 
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+              data-testid={`link-mobile-${label.toLowerCase()}`}
+            >
+              <Icon className="w-5 h-5" />
+              <span className="text-xs font-medium">{label}</span>
             </Link>
           );
         })}
