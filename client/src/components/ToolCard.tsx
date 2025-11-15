@@ -2,36 +2,40 @@ import { ArrowUpRight, ArrowUp } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Link } from "wouter";
 import TrendBadge from "./TrendBadge";
 
 interface ToolCardProps {
   id: string;
   name: string;
+  slug: string;
   tagline: string;
   logo: string;
-  category: string;
+  category?: string;
   upvotes: number;
   views: number;
   trendPercentage: number;
   isNew?: boolean;
 }
 
-export default function ToolCard({ 
-  id, 
-  name, 
-  tagline, 
-  logo, 
-  category, 
-  upvotes, 
-  views, 
+export default function ToolCard({
+  id,
+  name,
+  slug,
+  tagline,
+  logo,
+  category,
+  upvotes,
+  views,
   trendPercentage,
-  isNew = false 
+  isNew = false
 }: ToolCardProps) {
   return (
-    <Card 
-      className="group hover-elevate active-elevate-2 p-6 cursor-pointer transition-all overflow-visible"
-      data-testid={`card-tool-${id}`}
-    >
+    <Link href={`/tool/${slug}`}>
+      <Card
+        className="group hover-elevate active-elevate-2 p-6 cursor-pointer transition-all overflow-visible"
+        data-testid={`card-tool-${id}`}
+      >
       <div className="flex items-start gap-4 mb-4">
         <div className="w-16 h-16 rounded-lg bg-muted flex items-center justify-center flex-shrink-0 overflow-hidden">
           <img src={logo} alt={name} className="w-full h-full object-cover" />
@@ -70,15 +74,16 @@ export default function ToolCard({
             {views.toLocaleString()} views
           </div>
         </div>
-        <Button 
-          variant="ghost" 
-          size="icon" 
+        <Button
+          variant="ghost"
+          size="icon"
           className="opacity-0 group-hover:opacity-100 transition-opacity"
           data-testid={`button-view-tool-${id}`}
         >
           <ArrowUpRight className="w-4 h-4" />
         </Button>
       </div>
-    </Card>
+      </Card>
+    </Link>
   );
 }
