@@ -1,0 +1,402 @@
+⭐ MASTER PROMPT — AITRENDSDATA (Copy & Paste)
+
+PROMPT START
+
+I want you to build a complete production-ready web platform called AITRENDSDATA.
+This platform is an AI Trends Leaderboard + AI Tool Submission Platform where founders can submit AI projects, and users can explore trending AI tools updated daily.
+
+Below are ALL requirements. Follow them exactly.
+
+🔷 1. Branding & Style
+
+Use this branding system:
+
+Primary colors:
+
+Electric Blue: #3B82F6
+
+Deep Black: #0D0D0F
+
+Pure White: #FFFFFF
+
+Secondary colors:
+
+Slate Gray: #1E1E20
+
+Soft Gray: #D4D4D8
+
+Trend Green: #22C55E
+
+Trend Red: #EF4444
+
+Fonts:
+
+Primary: Inter
+
+Headings/Numbers: Space Grotesk
+
+Logo concept:
+A minimal upward trending line forming an “A”.
+
+Overall UI style:
+Clean, modern, futuristic, fast, data-focused, like Vercel / Linear / OpenAI.
+
+Support dark mode.
+
+🔷 2. Tech Stack
+
+Build with:
+
+Next.js 14 (App Router)
+
+Tailwind CSS + ShadCN UI
+
+Supabase (Database, Auth, Storage)
+
+Prisma (ORM)
+
+Vercel hosting
+
+Stripe (for sponsor spots)
+
+Umami / Plausible for analytics
+
+Recharts or Chart.js for graphs
+
+Use clean file structure and reusable components.
+
+🔷 3. Pages to Build
+
+Create ALL these pages fully designed and ready:
+
+1. Home Page
+
+Sections:
+
+Hero:
+“Discover the Best New AI Tools — Updated Daily.”
+Buttons: Submit Tool / Browse Tools
+
+Trending Today
+
+Fastest Rising
+
+New Tools Today
+
+Categories
+
+Sponsors Section
+
+2. Tool Page
+
+Logo, name, tagline
+
+Visit Website button
+
+Upvote button
+
+Description section
+
+Screenshots carousel
+
+Pricing
+
+Categories chips
+
+AI Trend Score
+
+Trend graph (7-day views)
+
+Related tools
+
+Embeddable badge with code snippet
+
+3. Submit Tool Page
+
+Multi-step form:
+
+Basic Info
+
+Media
+
+Details
+
+Publish
+
+4. Categories Page
+
+List of categories
+
+Trending tools per category
+
+5. Search Page
+
+Search bar
+
+Filters (category, pricing, trending, new)
+
+Updated results instantly
+
+6. Sponsors Page
+
+Pricing
+
+Stripe payment integration
+
+Sponsor card design
+
+7. Founder Profile Page (optional)
+
+Tools submitted
+
+Stats
+
+🔷 4. Components to Build
+
+ToolCard
+
+CategoryCard
+
+SponsorCard
+
+SearchBar
+
+ToolBadge
+
+TrendBadge
+
+TrendingGraph
+
+ScreenshotCarousel
+
+SubmissionForm components
+
+Header + Footer
+
+Sidebar (for desktop)
+
+Mobile Nav (Home, Search, Submit, Categories, Profile)
+
+🔷 5. Database Schema (Supabase + Prisma)
+
+Create these tables:
+
+tools
+
+id
+
+name
+
+slug
+
+tagline
+
+description
+
+website
+
+category
+
+logo_url
+
+images (array)
+
+upvotes
+
+views_today
+
+views_week
+
+trend_score
+
+created_at
+
+github_url
+
+twitter_url
+
+pricing
+
+founders
+
+id
+
+name
+
+email
+
+social_links
+
+tools (relation)
+
+votes
+
+id
+
+tool_id
+
+user_id
+
+created_at
+
+views
+
+id
+
+tool_id
+
+user_hash
+
+created_at
+
+sponsors
+
+id
+
+name
+
+logo
+
+url
+
+active_until
+
+tier
+
+🔷 6. Ranking Algorithms
+
+Implement:
+
+Trending Today:
+trending_score = (views_last_24h * 0.5) + (upvotes_last_24h * 1.2)
+
+Fastest Rising:
+growth = views_last_24h - views_previous_24h
+
+Weekly Top:
+weekly_score = (views_last_7_days * 0.4) + (upvotes_last_7_days * 1.5)
+
+🔷 7. Additional Required Features
+Embeddable badge for tools:
+
+Include:
+
+badge preview
+
+iframe embed code
+
+Example:
+
+<iframe src="https://aitrendsdata.com/badge/tool-slug" />
+
+Sponsor system:
+
+rotating sponsor cards
+
+Stripe checkout links
+
+admin dashboard for managing sponsors
+
+Newsletter system:
+
+“Top 10 AI Tools Today”
+
+Export via RSS or API
+
+SEO:
+
+OG images for each tool (AI generated if possible)
+
+Clean slugs: /tool/{slug}
+
+🔷 8. Dark Mode
+
+Auto theme detection
+
+Toggle in header
+
+Colors invert intelligently
+
+Charts support dark mode
+
+🔷 9. Deployment
+
+Export a clean Vercel-ready project
+
+Set up environment variables for:
+
+Supabase keys
+
+Stripe keys
+
+NEXT_PUBLIC_URL
+
+Analytics keys
+
+🔷 10. Deliverables
+
+Produce:
+
+Full file/folder structure
+
+All pages with UI implemented
+
+All components fully styled
+
+Database schema (Prisma + SQL)
+
+API routes:
+
+submit tool
+
+get trending tools
+
+upvote tool
+
+track view
+
+get categories
+
+sponsor integration
+
+Dummy sample data
+
+Responsive UI
+
+Dark/light mode system
+
+OG image builder
+
+Embeddable badge generator
+
+Charts + data logic
+
+Markdown support for descriptions
+
+SEO meta tags
+
+404 page
+
+🎯 Final Output Format
+
+Provide:
+
+Complete project structure
+
+All TSX files (pages + components)
+
+Prisma schema
+
+API routes
+
+Tailwind config
+
+Component code
+
+Example data
+
+Notes for deployment
+
+Make everything production-ready, scalable, clean, and visually excellent.
+
+PROMPT END
