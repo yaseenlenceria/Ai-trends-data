@@ -6,18 +6,92 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CheckCircle2 } from "lucide-react";
+import { useData } from "@/context/DataContext";
+
+interface FormData {
+  name: string;
+  tagline: string;
+  website: string;
+  categoryId: string;
+  description: string;
+  pricingModel: string;
+  twitter: string;
+  github: string;
+  logo: string;
+  screenshots: string[];
+  submitterEmail: string;
+  submitterName: string;
+}
 
 export default function Submit() {
   const [step, setStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { categories } = useData();
 
-  const handleNext = () => {
+  const [formData, setFormData] = useState<FormData>({
+    name: "",
+    tagline: "",
+    website: "",
+    categoryId: "",
+    description: "",
+    pricingModel: "",
+    twitter: "",
+    github: "",
+    logo: "",
+    screenshots: [],
+    submitterEmail: "",
+    submitterName: "",
+  });
+
+  const updateFormData = (field: keyof FormData, value: any) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleNext = async () => {
     if (step < 4) {
       setStep(step + 1);
-      console.log(`Moving to step ${step + 1}`);
     } else {
-      setSubmitted(true);
-      console.log("Form submitted");
+      // Submit the form
+      setSubmitting(true);
+      setError(null);
+      try {
+        const response = await fetch("/api/submissions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            tagline: formData.tagline,
+            description: formData.description,
+            logo: formData.logo || "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=128&h=128&fit=crop",
+            categoryId: formData.categoryId,
+            website: formData.website,
+            twitter: formData.twitter || null,
+            github: formData.github || null,
+            screenshots: formData.screenshots.length > 0 ? formData.screenshots : null,
+            pricing: formData.pricingModel ? {
+              model: formData.pricingModel,
+              plans: [],
+            } : null,
+            submitterEmail: formData.submitterEmail,
+            submitterName: formData.submitterName || null,
+          }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Failed to submit");
+        }
+
+        setSubmitted(true);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to submit. Please try again.");
+      } finally {
+        setSubmitting(false);
+      }
     }
   };
 
@@ -36,7 +110,24 @@ export default function Submit() {
           <p className="text-muted-foreground mb-8">
             Your AI tool has been submitted for review. We'll notify you once it's approved and live on the platform.
           </p>
-          <Button onClick={() => { setSubmitted(false); setStep(1); }} data-testid="button-submit-another">
+          <Button onClick={() => {
+            setSubmitted(false);
+            setStep(1);
+            setFormData({
+              name: "",
+              tagline: "",
+              website: "",
+              categoryId: "",
+              description: "",
+              pricingModel: "",
+              twitter: "",
+              github: "",
+              logo: "",
+              screenshots: [],
+              submitterEmail: "",
+              submitterName: "",
+            });
+          }} data-testid="button-submit-another">
             Submit Another Tool
           </Button>
         </Card>
@@ -76,42 +167,68 @@ export default function Submit() {
               <h2 className="font-mono font-bold text-2xl mb-6">Basic Information</h2>
               <div className="space-y-2">
                 <Label htmlFor="tool-name">Tool Name *</Label>
-                <Input id="tool-name" placeholder="e.g., ChatGPT" data-testid="input-tool-name" />
+                <Input
+                  id="tool-name"
+                  placeholder="e.g., ChatGPT"
+                  data-testid="input-tool-name"
+                  value={formData.name}
+                  onChange={(e) => updateFormData("name", e.target.value)}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="tagline">Tagline *</Label>
-                <Input 
-                  id="tagline" 
+                <Input
+                  id="tagline"
                   placeholder="Short description in one sentence"
                   data-testid="input-tagline"
+                  value={formData.tagline}
+                  onChange={(e) => updateFormData("tagline", e.target.value)}
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="website">Website URL *</Label>
-                <Input 
-                  id="website" 
-                  type="url" 
+                <Input
+                  id="website"
+                  type="url"
                   placeholder="https://example.com"
                   data-testid="input-website"
+                  value={formData.website}
+                  onChange={(e) => updateFormData("website", e.target.value)}
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="category">Category *</Label>
-                <Select>
+                <Select value={formData.categoryId} onValueChange={(value) => updateFormData("categoryId", value)}>
                   <SelectTrigger data-testid="select-category">
                     <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ai-assistant">AI Assistant</SelectItem>
-                    <SelectItem value="image-generation">Image Generation</SelectItem>
-                    <SelectItem value="video-generation">Video Generation</SelectItem>
-                    <SelectItem value="code-assistant">Code Assistant</SelectItem>
-                    <SelectItem value="audio-voice">Audio & Voice</SelectItem>
-                    <SelectItem value="writing">Writing</SelectItem>
-                    <SelectItem value="data-analysis">Data Analysis</SelectItem>
-                    <SelectItem value="automation">Automation</SelectItem>
+                    {categories.map((cat) => (
+                      <SelectItem key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="submitter-email">Your Email *</Label>
+                <Input
+                  id="submitter-email"
+                  type="email"
+                  placeholder="your@email.com"
+                  value={formData.submitterEmail}
+                  onChange={(e) => updateFormData("submitterEmail", e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="submitter-name">Your Name (Optional)</Label>
+                <Input
+                  id="submitter-name"
+                  placeholder="John Doe"
+                  value={formData.submitterName}
+                  onChange={(e) => updateFormData("submitterName", e.target.value)}
+                />
               </div>
             </div>
           )}
@@ -120,28 +237,35 @@ export default function Submit() {
             <div className="space-y-6">
               <h2 className="font-mono font-bold text-2xl mb-6">Media</h2>
               <div className="space-y-2">
-                <Label>Logo *</Label>
-                <div className="border-2 border-dashed rounded-lg p-8 text-center hover-elevate cursor-pointer">
-                  <p className="text-sm text-muted-foreground">
-                    Click to upload or drag and drop
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    PNG, JPG up to 2MB (Square recommended)
-                  </p>
-                  <Input type="file" className="hidden" data-testid="input-logo" />
-                </div>
+                <Label htmlFor="logo-url">Logo URL *</Label>
+                <Input
+                  id="logo-url"
+                  type="url"
+                  placeholder="https://example.com/logo.png"
+                  data-testid="input-logo"
+                  value={formData.logo}
+                  onChange={(e) => updateFormData("logo", e.target.value)}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Provide a URL to your tool's logo (Square image recommended)
+                </p>
               </div>
               <div className="space-y-2">
-                <Label>Screenshots (up to 5)</Label>
-                <div className="border-2 border-dashed rounded-lg p-8 text-center hover-elevate cursor-pointer">
-                  <p className="text-sm text-muted-foreground">
-                    Click to upload or drag and drop
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    PNG, JPG up to 5MB each (16:9 ratio recommended)
-                  </p>
-                  <Input type="file" multiple className="hidden" data-testid="input-screenshots" />
-                </div>
+                <Label htmlFor="screenshot-url">Screenshot URL (Optional)</Label>
+                <Input
+                  id="screenshot-url"
+                  type="url"
+                  placeholder="https://example.com/screenshot.png"
+                  data-testid="input-screenshots"
+                  value={formData.screenshots[0] || ""}
+                  onChange={(e) => {
+                    const newScreenshots = e.target.value ? [e.target.value] : [];
+                    updateFormData("screenshots", newScreenshots);
+                  }}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Provide a URL to a screenshot of your tool (16:9 ratio recommended)
+                </p>
               </div>
             </div>
           )}
@@ -151,16 +275,18 @@ export default function Submit() {
               <h2 className="font-mono font-bold text-2xl mb-6">Details</h2>
               <div className="space-y-2">
                 <Label htmlFor="description">Description *</Label>
-                <Textarea 
-                  id="description" 
+                <Textarea
+                  id="description"
                   placeholder="Provide a detailed description of your AI tool, its features, and use cases..."
                   rows={8}
                   data-testid="textarea-description"
+                  value={formData.description}
+                  onChange={(e) => updateFormData("description", e.target.value)}
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="pricing">Pricing Model</Label>
-                <Select>
+                <Select value={formData.pricingModel} onValueChange={(value) => updateFormData("pricingModel", value)}>
                   <SelectTrigger data-testid="select-pricing">
                     <SelectValue placeholder="Select pricing model" />
                   </SelectTrigger>
@@ -174,20 +300,24 @@ export default function Submit() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="twitter">Twitter URL (Optional)</Label>
-                <Input 
-                  id="twitter" 
-                  type="url" 
+                <Input
+                  id="twitter"
+                  type="url"
                   placeholder="https://twitter.com/..."
                   data-testid="input-twitter"
+                  value={formData.twitter}
+                  onChange={(e) => updateFormData("twitter", e.target.value)}
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="github">GitHub URL (Optional)</Label>
-                <Input 
-                  id="github" 
-                  type="url" 
+                <Input
+                  id="github"
+                  type="url"
                   placeholder="https://github.com/..."
                   data-testid="input-github"
+                  value={formData.github}
+                  onChange={(e) => updateFormData("github", e.target.value)}
                 />
               </div>
             </div>
@@ -196,22 +326,33 @@ export default function Submit() {
           {step === 4 && (
             <div className="space-y-6">
               <h2 className="font-mono font-bold text-2xl mb-6">Review & Publish</h2>
+              {error && (
+                <div className="bg-destructive/10 text-destructive border border-destructive rounded-lg p-4 text-sm">
+                  {error}
+                </div>
+              )}
               <div className="space-y-4">
                 <div className="border-l-4 border-primary pl-4">
                   <h3 className="font-mono font-bold mb-1">Tool Name</h3>
-                  <p className="text-muted-foreground">ChatGPT (Example)</p>
+                  <p className="text-muted-foreground">{formData.name || "Not provided"}</p>
                 </div>
                 <div className="border-l-4 border-primary pl-4">
                   <h3 className="font-mono font-bold mb-1">Category</h3>
-                  <p className="text-muted-foreground">AI Assistant</p>
+                  <p className="text-muted-foreground">
+                    {categories.find((c) => c.id === formData.categoryId)?.name || "Not selected"}
+                  </p>
                 </div>
                 <div className="border-l-4 border-primary pl-4">
                   <h3 className="font-mono font-bold mb-1">Tagline</h3>
-                  <p className="text-muted-foreground">Conversational AI that understands context</p>
+                  <p className="text-muted-foreground">{formData.tagline || "Not provided"}</p>
                 </div>
                 <div className="border-l-4 border-primary pl-4">
                   <h3 className="font-mono font-bold mb-1">Website</h3>
-                  <p className="text-muted-foreground">https://chat.openai.com</p>
+                  <p className="text-muted-foreground">{formData.website || "Not provided"}</p>
+                </div>
+                <div className="border-l-4 border-primary pl-4">
+                  <h3 className="font-mono font-bold mb-1">Email</h3>
+                  <p className="text-muted-foreground">{formData.submitterEmail || "Not provided"}</p>
                 </div>
               </div>
               <div className="bg-muted rounded-lg p-4 text-sm">
@@ -225,12 +366,23 @@ export default function Submit() {
 
         <div className="flex gap-4">
           {step > 1 && (
-            <Button variant="outline" onClick={handleBack} className="flex-1" data-testid="button-back">
+            <Button
+              variant="outline"
+              onClick={handleBack}
+              className="flex-1"
+              data-testid="button-back"
+              disabled={submitting}
+            >
               Back
             </Button>
           )}
-          <Button onClick={handleNext} className="flex-1" data-testid="button-next">
-            {step === 4 ? "Submit for Review" : "Next"}
+          <Button
+            onClick={handleNext}
+            className="flex-1"
+            data-testid="button-next"
+            disabled={submitting}
+          >
+            {submitting ? "Submitting..." : step === 4 ? "Submit for Review" : "Next"}
           </Button>
         </div>
       </div>

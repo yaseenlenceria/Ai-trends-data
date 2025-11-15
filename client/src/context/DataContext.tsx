@@ -1,4 +1,5 @@
-import { createContext, useContext, ReactNode } from "react";
+import { createContext, useContext, ReactNode, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { LucideIcon, MessageSquare, Image, Video, Code, Mic, FileText, Database, Zap } from "lucide-react";
 
 export interface Tool {
@@ -8,7 +9,7 @@ export interface Tool {
   tagline: string;
   description?: string;
   logo: string;
-  category: string;
+  category?: string;
   categoryId: string;
   upvotes: number;
   views: number;
@@ -34,7 +35,9 @@ export interface Tool {
 export interface Category {
   id: string;
   name: string;
-  icon: LucideIcon;
+  slug: string;
+  icon: LucideIcon | string;
+  description?: string;
   toolCount: number;
 }
 
@@ -51,6 +54,7 @@ interface DataContextType {
   tools: Tool[];
   categories: Category[];
   sponsors: Sponsor[];
+  isLoading: boolean;
   getToolBySlug: (slug: string) => Tool | undefined;
   getToolsByCategory: (categoryId: string) => Tool[];
   getTrendingTools: () => Tool[];
@@ -60,56 +64,54 @@ interface DataContextType {
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
-// ============================================================
-// TODO: REPLACE THIS MOCK DATA WITH YOUR ACTUAL DATA
-// ============================================================
-// You can:
-// 1. Replace these arrays with data from your backend API
-// 2. Use fetch/axios to load data from your database
-// 3. Import data from JSON files
-// ============================================================
-//
-// HOW AITRENDSDATA HELPS COMPANIES (Why they will submit):
-// 
-// ✔ 1. Visibility & Traffic
-//    - Brings companies new users, signups, traffic, newsletter subscribers
-//    - Even 10 extra users is a win for AI founders
-//
-// ✔ 2. Ranking = Social Proof
-//    - Being on "Trending Today", "Fastest Rising", "New AI Tools" makes founders want to share
-//    - Huge psychological trigger: "Look, our tool is trending today!"
-//
-// ✔ 3. Public Tool Page
-//    - Every tool gets SEO-optimized page with logo, description, analytics, trend score
-//    - Helps with Google rankings, brand awareness, backlinks
-//
-// ✔ 4. Embeddable Badge
-//    - Companies get "Featured on AITRENDSDATA" badge to embed on their website
-//    - This gives YOU backlinks + traffic
-//
-// ✔ 5. Category Exposure
-//    - Tools appear in relevant categories (Agents, APIs, Productivity, etc.)
-//    - Increases discoverability
-//
-// ✔ 6. Featured Spots (paid)
-//    - Companies can pay for more attention via featured placement
-//
-// HOW IT HELPS USERS:
-// - Discover new AI tools
-// - Compare AI tools
-// - See trending AI tech
-// - Get curated lists
-// Your site becomes THE hub of AI discovery
-//
-// GROWTH STRATEGY (TrustMR / ProductHunt Method):
-// STEP 1: Add 20-30 tools manually (ChatGPT, Midjourney, Claude, Notion AI, etc.)
-//         Make your site look "alive" - companies only submit when they see others listed
-// STEP 2: Promote on Twitter, LinkedIn, Reddit (r/artificial, r/ChatGPT)
-// STEP 3: Reach out to AI founders directly
-// STEP 4: Build newsletter for "Top 10 AI Tools Today"
-// ============================================================
+// Map icon names to Lucide components
+const iconMap: Record<string, LucideIcon> = {
+  MessageSquare,
+  Image,
+  Video,
+  Code,
+  Mic,
+  FileText,
+  Database,
+  Zap,
+};
 
-const MOCK_TOOLS: Tool[] = [
+// API fetching functions
+async function fetchTools(): Promise<Tool[]> {
+  const response = await fetch("/api/tools");
+  if (!response.ok) throw new Error("Failed to fetch tools");
+  const data = await response.json();
+  // Check if tools were created in the last 7 days
+  return data.map((tool: any) => {
+    const createdAt = new Date(tool.createdAt);
+    const now = new Date();
+    const daysSinceCreated = Math.floor((now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
+    return {
+      ...tool,
+      category: undefined, // Will be resolved from categoryId
+      isNew: daysSinceCreated <= 7,
+    };
+  });
+}
+
+async function fetchCategories(): Promise<Category[]> {
+  const response = await fetch("/api/categories");
+  if (!response.ok) throw new Error("Failed to fetch categories");
+  const data = await response.json();
+  return data.map((cat: any) => ({
+    ...cat,
+    icon: iconMap[cat.icon] || MessageSquare,
+  }));
+}
+
+async function fetchSponsors(): Promise<Sponsor[]> {
+  const response = await fetch("/api/sponsors");
+  if (!response.ok) throw new Error("Failed to fetch sponsors");
+  return response.json();
+}
+
+// Fallback mock data for development (in case API is not available)
+const FALLBACK_TOOLS: Tool[] = [
   // AI Assistants
   {
     id: "1",
@@ -657,47 +659,90 @@ const MOCK_SPONSORS: Sponsor[] = [
   },
 ];
 
+const FALLBACK_CATEGORIES: Category[] = [
+  { id: "chat", name: "AI Assistant", slug: "chat", icon: MessageSquare, toolCount: 0 },
+  { id: "image", name: "Image Generation", slug: "image", icon: Image, toolCount: 0 },
+  { id: "video", name: "Video Generation", slug: "video", icon: Video, toolCount: 0 },
+  { id: "code", name: "Code Assistant", slug: "code", icon: Code, toolCount: 0 },
+  { id: "audio", name: "Audio & Voice", slug: "audio", icon: Mic, toolCount: 0 },
+  { id: "writing", name: "Writing", slug: "writing", icon: FileText, toolCount: 0 },
+  { id: "data", name: "Data Analysis", slug: "data", icon: Database, toolCount: 0 },
+  { id: "automation", name: "Automation", slug: "automation", icon: Zap, toolCount: 0 },
+];
+
+const FALLBACK_SPONSORS: Sponsor[] = [];
+
 export function DataProvider({ children }: { children: ReactNode }) {
-  const getToolBySlug = (slug: string) => {
-    return MOCK_TOOLS.find(tool => tool.slug === slug);
-  };
+  // Fetch data using React Query
+  const { data: tools = FALLBACK_TOOLS, isLoading: toolsLoading } = useQuery({
+    queryKey: ["tools"],
+    queryFn: fetchTools,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchOnWindowFocus: false,
+  });
 
-  const getToolsByCategory = (categoryId: string) => {
-    return MOCK_TOOLS.filter(tool => tool.categoryId === categoryId);
-  };
+  const { data: categories = FALLBACK_CATEGORIES, isLoading: categoriesLoading } = useQuery({
+    queryKey: ["categories"],
+    queryFn: fetchCategories,
+    staleTime: 1000 * 60 * 10, // 10 minutes
+    refetchOnWindowFocus: false,
+  });
 
-  const getTrendingTools = () => {
-    return [...MOCK_TOOLS].sort((a, b) => {
-      const scoreA = (a.viewsToday || 0) * 0.5 + a.upvotes * 1.2;
-      const scoreB = (b.viewsToday || 0) * 0.5 + b.upvotes * 1.2;
-      return scoreB - scoreA;
-    }).slice(0, 6);
-  };
+  const { data: sponsors = FALLBACK_SPONSORS, isLoading: sponsorsLoading } = useQuery({
+    queryKey: ["sponsors"],
+    queryFn: fetchSponsors,
+    staleTime: 1000 * 60 * 10, // 10 minutes
+    refetchOnWindowFocus: false,
+  });
 
-  const getFastestRisingTools = () => {
-    return [...MOCK_TOOLS].sort((a, b) => b.trendPercentage - a.trendPercentage).slice(0, 6);
-  };
+  const isLoading = toolsLoading || categoriesLoading || sponsorsLoading;
 
-  const getNewTools = () => {
-    return MOCK_TOOLS.filter(tool => tool.isNew).slice(0, 6);
-  };
-
-  return (
-    <DataContext.Provider
-      value={{
-        tools: MOCK_TOOLS,
-        categories: MOCK_CATEGORIES,
-        sponsors: MOCK_SPONSORS,
-        getToolBySlug,
-        getToolsByCategory,
-        getTrendingTools,
-        getFastestRisingTools,
-        getNewTools,
-      }}
-    >
-      {children}
-    </DataContext.Provider>
+  // Memoized helper functions
+  const getToolBySlug = useMemo(
+    () => (slug: string) => tools.find((tool) => tool.slug === slug),
+    [tools]
   );
+
+  const getToolsByCategory = useMemo(
+    () => (categoryId: string) => tools.filter((tool) => tool.categoryId === categoryId),
+    [tools]
+  );
+
+  const getTrendingTools = useMemo(() => {
+    return () =>
+      [...tools]
+        .sort((a, b) => {
+          const scoreA = (a.viewsToday || 0) * 0.5 + a.upvotes * 1.2;
+          const scoreB = (b.viewsToday || 0) * 0.5 + b.upvotes * 1.2;
+          return scoreB - scoreA;
+        })
+        .slice(0, 6);
+  }, [tools]);
+
+  const getFastestRisingTools = useMemo(() => {
+    return () => [...tools].sort((a, b) => b.trendPercentage - a.trendPercentage).slice(0, 6);
+  }, [tools]);
+
+  const getNewTools = useMemo(() => {
+    return () => tools.filter((tool) => tool.isNew).slice(0, 6);
+  }, [tools]);
+
+  const value = useMemo(
+    () => ({
+      tools,
+      categories,
+      sponsors,
+      isLoading,
+      getToolBySlug,
+      getToolsByCategory,
+      getTrendingTools,
+      getFastestRisingTools,
+      getNewTools,
+    }),
+    [tools, categories, sponsors, isLoading, getToolBySlug, getToolsByCategory, getTrendingTools, getFastestRisingTools, getNewTools]
+  );
+
+  return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
 }
 
 export function useData() {
