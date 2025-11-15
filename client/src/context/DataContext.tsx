@@ -299,7 +299,7 @@ const FALLBACK_TOOLS: Tool[] = [
     name: "Midjourney",
     slug: "midjourney",
     tagline: "AI art generator creating stunning images from text descriptions",
-    description: "Midjourney is a leading AI image generator that creates high-quality, artistic images from text prompts. Known for its distinctive aesthetic and creative outputs.",
+    description: "Midjourney is an independent research lab producing a proprietary AI program that creates images from textual descriptions. Known for its distinctive artistic aesthetic and ability to generate highly creative, imaginative visuals, Midjourney has become one of the most popular AI art generators. It excels at creating concept art, illustrations, and unique visual styles that blend realism with artistic interpretation.",
     logo: "https://images.unsplash.com/photo-1686191128892-c21c4a86a8c6?w=128&h=128&fit=crop",
     category: "Image Generation",
     categoryId: "image",
@@ -309,6 +309,35 @@ const FALLBACK_TOOLS: Tool[] = [
     viewsToday: 3892,
     trendPercentage: 67.8,
     website: "https://midjourney.com",
+    twitter: "https://twitter.com/midjourney",
+    screenshots: [
+      "https://images.unsplash.com/photo-1686191128892-c21c4a86a8c6?w=1200&h=675&fit=crop",
+      "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=1200&h=675&fit=crop",
+    ],
+    trendData: [
+      { date: "Mon", views: 92000 },
+      { date: "Tue", views: 94500 },
+      { date: "Wed", views: 96200 },
+      { date: "Thu", views: 95800 },
+      { date: "Fri", views: 99500 },
+      { date: "Sat", views: 102000 },
+      { date: "Sun", views: 98145 },
+    ],
+    pricing: {
+      model: "paid",
+      plans: [
+        {
+          name: "Basic",
+          price: "$10/month",
+          features: ["200 images/month", "3.3 hrs fast GPU time", "Personal commercial terms"]
+        },
+        {
+          name: "Standard",
+          price: "$30/month",
+          features: ["Unlimited relaxed", "15 hrs fast GPU", "Commercial terms", "Priority queue"]
+        }
+      ]
+    }
   },
   {
     id: "6",
@@ -347,7 +376,7 @@ const FALLBACK_TOOLS: Tool[] = [
     name: "GitHub Copilot",
     slug: "github-copilot",
     tagline: "AI pair programmer that helps you write code faster",
-    description: "GitHub Copilot uses OpenAI Codex to suggest code and entire functions in real-time. Integrated directly into your IDE for seamless coding assistance.",
+    description: "GitHub Copilot is an AI-powered code completion tool developed by GitHub and OpenAI. It uses machine learning models trained on billions of lines of code to suggest whole lines or entire functions as you type. Copilot integrates directly into popular IDEs like VS Code, JetBrains, and Neovim, providing context-aware code suggestions, helping you write code faster and learn new frameworks more efficiently.",
     logo: "https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?w=128&h=128&fit=crop",
     category: "Code Assistant",
     categoryId: "code",
@@ -357,6 +386,35 @@ const FALLBACK_TOOLS: Tool[] = [
     viewsToday: 3421,
     trendPercentage: 42.1,
     website: "https://github.com/features/copilot",
+    github: "https://github.com/features/copilot",
+    screenshots: [
+      "https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?w=1200&h=675&fit=crop",
+      "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&h=675&fit=crop",
+    ],
+    trendData: [
+      { date: "Mon", views: 84000 },
+      { date: "Tue", views: 86500 },
+      { date: "Wed", views: 88200 },
+      { date: "Thu", views: 87500 },
+      { date: "Fri", views: 90500 },
+      { date: "Sat", views: 92000 },
+      { date: "Sun", views: 89421 },
+    ],
+    pricing: {
+      model: "paid",
+      plans: [
+        {
+          name: "Individual",
+          price: "$10/month",
+          features: ["Code completions", "Chat in IDE", "CLI assistance", "Multi-language support"]
+        },
+        {
+          name: "Business",
+          price: "$19/month/user",
+          features: ["Everything in Individual", "License management", "Organization-wide policies", "Privacy controls"]
+        }
+      ]
+    }
   },
   {
     id: "9",
