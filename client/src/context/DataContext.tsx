@@ -1,4 +1,4 @@
-import { createContext, useContext, ReactNode, useMemo } from "react";
+import { createContext, useContext, ReactNode, useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { LucideIcon, MessageSquare, Image, Video, Code, Mic, FileText, Database, Zap } from "lucide-react";
 
@@ -1578,28 +1578,75 @@ const FALLBACK_SPONSORS: Sponsor[] = [];
 
 export function DataProvider({ children }: { children: ReactNode }) {
   // Fetch data using React Query
-  const { data: tools = FALLBACK_TOOLS, isLoading: toolsLoading } = useQuery({
+  const {
+    data: toolsData,
+    isFetching: toolsFetching,
+    isError: toolsError,
+    error: toolsErrorDetails,
+  } = useQuery({
     queryKey: ["tools"],
     queryFn: fetchTools,
     staleTime: 1000 * 60 * 5, // 5 minutes
     refetchOnWindowFocus: false,
+    retry: 1,
+    initialData: FALLBACK_TOOLS,
   });
 
-  const { data: categories = FALLBACK_CATEGORIES, isLoading: categoriesLoading } = useQuery({
+  const tools = toolsData ?? FALLBACK_TOOLS;
+
+  const {
+    data: categoriesData,
+    isFetching: categoriesFetching,
+    isError: categoriesError,
+    error: categoriesErrorDetails,
+  } = useQuery({
     queryKey: ["categories"],
     queryFn: fetchCategories,
     staleTime: 1000 * 60 * 10, // 10 minutes
     refetchOnWindowFocus: false,
+    retry: 1,
+    initialData: FALLBACK_CATEGORIES,
   });
 
-  const { data: sponsors = FALLBACK_SPONSORS, isLoading: sponsorsLoading } = useQuery({
+  const categories = categoriesData ?? FALLBACK_CATEGORIES;
+
+  const {
+    data: sponsorsData,
+    isError: sponsorsError,
+    error: sponsorsErrorDetails,
+  } = useQuery({
     queryKey: ["sponsors"],
     queryFn: fetchSponsors,
     staleTime: 1000 * 60 * 10, // 10 minutes
     refetchOnWindowFocus: false,
+    retry: 1,
+    initialData: FALLBACK_SPONSORS,
   });
 
-  const isLoading = toolsLoading || categoriesLoading || sponsorsLoading;
+  const sponsors = sponsorsData ?? FALLBACK_SPONSORS;
+
+  useEffect(() => {
+    if (toolsError) {
+      console.error("Failed to fetch tools from API, using fallback data.", toolsErrorDetails);
+    }
+  }, [toolsError, toolsErrorDetails]);
+
+  useEffect(() => {
+    if (categoriesError) {
+      console.error("Failed to fetch categories from API, using fallback data.", categoriesErrorDetails);
+    }
+  }, [categoriesError, categoriesErrorDetails]);
+
+  useEffect(() => {
+    if (sponsorsError) {
+      console.error("Failed to fetch sponsors from API, using fallback data.", sponsorsErrorDetails);
+    }
+  }, [sponsorsError, sponsorsErrorDetails]);
+
+  const hasTools = Array.isArray(tools) && tools.length > 0;
+  const hasCategories = Array.isArray(categories) && categories.length > 0;
+
+  const isLoading = (!hasTools && toolsFetching) || (!hasCategories && categoriesFetching);
 
   // Memoized helper functions
   const getToolBySlug = useMemo(
