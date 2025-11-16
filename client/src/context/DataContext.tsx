@@ -1472,9 +1472,9 @@ const FALLBACK_TOOLS: Tool[] = [
   },
 ];
 
-// Calculate actual tool counts from MOCK_TOOLS
+// Calculate actual tool counts from FALLBACK_TOOLS
 const getCategoryToolCount = (categoryId: string) => {
-  return MOCK_TOOLS.filter(tool => tool.categoryId === categoryId).length;
+  return FALLBACK_TOOLS.filter(tool => tool.categoryId === categoryId).length;
 };
 
 const MOCK_CATEGORIES: Category[] = [
@@ -1574,7 +1574,7 @@ const MOCK_SPONSORS: Sponsor[] = [
 // Use MOCK_CATEGORIES as fallback with actual tool counts
 const FALLBACK_CATEGORIES: Category[] = MOCK_CATEGORIES;
 
-const FALLBACK_SPONSORS: Sponsor[] = [];
+const FALLBACK_SPONSORS: Sponsor[] = MOCK_SPONSORS;
 
 export function DataProvider({ children }: { children: ReactNode }) {
   // Fetch data using React Query
