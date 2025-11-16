@@ -864,6 +864,162 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ===============================================
+  // CRON JOB ENDPOINTS (for Vercel Cron)
+  // ===============================================
+
+  // POST /api/cron/discover-tools - Run tool discovery
+  app.post("/api/cron/discover-tools", async (req, res) => {
+    try {
+      // Verify cron secret for security
+      const cronSecret = req.headers['authorization'];
+      if (cronSecret !== `Bearer ${process.env.CRON_SECRET}`) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      const { discoverNewTools } = await import('./cron/discoverTools');
+      const result = await discoverNewTools();
+
+      res.json({
+        success: true,
+        message: "Tool discovery completed",
+        stats: result,
+      });
+    } catch (error) {
+      console.error("Tool discovery cron error:", error);
+      res.status(500).json({
+        error: "Tool discovery failed",
+        message: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  });
+
+  // POST /api/cron/update-metrics - Run metrics update
+  app.post("/api/cron/update-metrics", async (req, res) => {
+    try {
+      const cronSecret = req.headers['authorization'];
+      if (cronSecret !== `Bearer ${process.env.CRON_SECRET}`) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      const { default: updateToolMetrics } = await import('./cron/updateMetrics');
+      const result = await updateToolMetrics();
+
+      res.json({
+        success: true,
+        message: "Metrics update completed",
+        stats: result,
+      });
+    } catch (error) {
+      console.error("Metrics update cron error:", error);
+      res.status(500).json({
+        error: "Metrics update failed",
+        message: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  });
+
+  // POST /api/cron/refresh-tools - Run tool refresh
+  app.post("/api/cron/refresh-tools", async (req, res) => {
+    try {
+      const cronSecret = req.headers['authorization'];
+      if (cronSecret !== `Bearer ${process.env.CRON_SECRET}`) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      const { default: refreshExistingTools } = await import('./cron/refreshTools');
+      const result = await refreshExistingTools();
+
+      res.json({
+        success: true,
+        message: "Tool refresh completed",
+        stats: result,
+      });
+    } catch (error) {
+      console.error("Tool refresh cron error:", error);
+      res.status(500).json({
+        error: "Tool refresh failed",
+        message: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  });
+
+  // GET /api/automation-logs - Get automation logs (admin only)
+  app.get("/api/automation-logs", async (req, res) => {
+    try {
+      const { automationLogs } = await import('@shared/schema');
+      const { limit = 50, type } = req.query;
+
+      let query = db
+        .select()
+        .from(automationLogs)
+        .orderBy(desc(automationLogs.createdAt))
+        .limit(Number(limit));
+
+      if (type) {
+        query = query.where(eq(automationLogs.type, type as any));
+      }
+
+      const logs = await query;
+
+      res.json(logs);
+    } catch (error) {
+      console.error("Error fetching automation logs:", error);
+      res.status(500).json({ error: "Failed to fetch logs" });
+    }
+  });
+
+  // GET /api/discovered-tools - Get discovered tools (admin only)
+  app.get("/api/discovered-tools", async (req, res) => {
+    try {
+      const { discoveredTools } = await import('@shared/schema');
+      const { status, limit = 100 } = req.query;
+
+      let query = db
+        .select()
+        .from(discoveredTools)
+        .orderBy(desc(discoveredTools.discoveredAt))
+        .limit(Number(limit));
+
+      if (status) {
+        query = query.where(eq(discoveredTools.status, status as any));
+      }
+
+      const discovered = await query;
+
+      res.json(discovered);
+    } catch (error) {
+      console.error("Error fetching discovered tools:", error);
+      res.status(500).json({ error: "Failed to fetch discovered tools" });
+    }
+  });
+
+  // GET /api/tool-metrics/:toolId - Get metrics for a specific tool
+  app.get("/api/tool-metrics/:toolId", async (req, res) => {
+    try {
+      const { toolMetrics } = await import('@shared/schema');
+      const { toolId } = req.params;
+      const { days = 30 } = req.query;
+
+      const daysAgo = new Date();
+      daysAgo.setDate(daysAgo.getDate() - Number(days));
+
+      const metrics = await db
+        .select()
+        .from(toolMetrics)
+        .where(and(
+          eq(toolMetrics.toolId, toolId),
+          gte(toolMetrics.date, daysAgo)
+        ))
+        .orderBy(desc(toolMetrics.date));
+
+      res.json(metrics);
+    } catch (error) {
+      console.error("Error fetching tool metrics:", error);
+      res.status(500).json({ error: "Failed to fetch metrics" });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;

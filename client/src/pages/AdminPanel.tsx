@@ -2,11 +2,13 @@ import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Settings, Package } from "lucide-react";
+import { Plus, Settings, Package, Upload, Activity } from "lucide-react";
 import ToolForm from "@/components/admin/ToolForm";
 import CategoryForm from "@/components/admin/CategoryForm";
 import ToolsManager from "@/components/admin/ToolsManager";
 import CategoriesManager from "@/components/admin/CategoriesManager";
+import BulkImport from "@/components/admin/BulkImport";
+import AutomationDashboard from "@/components/admin/AutomationDashboard";
 
 export default function AdminPanel() {
   const [showToolForm, setShowToolForm] = useState(false);
@@ -47,7 +49,7 @@ export default function AdminPanel() {
         </div>
 
         <Tabs defaultValue="tools" className="space-y-6">
-          <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsList className="grid w-full max-w-4xl grid-cols-4">
             <TabsTrigger value="tools" className="flex items-center gap-2">
               <Package className="w-4 h-4" />
               Tools
@@ -55,6 +57,14 @@ export default function AdminPanel() {
             <TabsTrigger value="categories" className="flex items-center gap-2">
               <Settings className="w-4 h-4" />
               Categories
+            </TabsTrigger>
+            <TabsTrigger value="bulk-import" className="flex items-center gap-2">
+              <Upload className="w-4 h-4" />
+              Bulk Import
+            </TabsTrigger>
+            <TabsTrigger value="automation" className="flex items-center gap-2">
+              <Activity className="w-4 h-4" />
+              Automation
             </TabsTrigger>
           </TabsList>
 
@@ -113,6 +123,18 @@ export default function AdminPanel() {
               ) : (
                 <CategoriesManager onEdit={handleCategoryEdit} />
               )}
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="bulk-import" className="space-y-4">
+            <Card className="p-6">
+              <BulkImport />
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="automation" className="space-y-4">
+            <Card className="p-6">
+              <AutomationDashboard />
             </Card>
           </TabsContent>
         </Tabs>
