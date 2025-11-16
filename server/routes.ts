@@ -1,6 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { db } from "./db";
+import { db, hasDatabase } from "./db";
 import { tools, categories, sponsors, upvotes, analytics, submissions } from "@shared/schema";
 import { eq, desc, sql, and, gte } from "drizzle-orm";
 
@@ -12,6 +12,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // GET /api/categories - Get all categories with tool count
   app.get("/api/categories", async (req, res) => {
     try {
+      if (!hasDatabase || !db) {
+        // Return empty array when database is not available
+        // The frontend will use its fallback data
+        return res.json([]);
+      }
+
       const categoriesData = await db
         .select({
           id: categories.id,
@@ -39,6 +45,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // GET /api/tools - Get all approved tools
   app.get("/api/tools", async (req, res) => {
     try {
+      if (!hasDatabase || !db) {
+        // Return empty array when database is not available
+        // The frontend will use its fallback data
+        return res.json([]);
+      }
+
       const allTools = await db
         .select()
         .from(tools)
@@ -313,6 +325,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // GET /api/sponsors - Get all active sponsors
   app.get("/api/sponsors", async (req, res) => {
     try {
+      if (!hasDatabase || !db) {
+        // Return empty array when database is not available
+        // The frontend will use its fallback data
+        return res.json([]);
+      }
+
       const now = new Date();
       const activeSponsors = await db
         .select()
