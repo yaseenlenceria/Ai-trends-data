@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { Moon, Sun, Plus, Settings } from "lucide-react";
+import { Moon, Sun, Plus, Settings, BarChart3, GitCompare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "./ThemeProvider";
 import logoImage from "@assets/generated_images/AITRENDSDATA_logo_mark_8e712632.png";
@@ -20,6 +20,14 @@ export default function Header() {
         <nav className="hidden md:flex items-center gap-1">
           <Link href="/" className="px-4 py-2 text-sm font-medium hover-elevate rounded-md" data-testid="link-nav-home">
             Home
+          </Link>
+          <Link href="/dashboard" className="px-4 py-2 text-sm font-medium hover-elevate rounded-md flex items-center gap-1" data-testid="link-nav-dashboard">
+            <BarChart3 className="w-4 h-4" />
+            Dashboard
+          </Link>
+          <Link href="/compare" className="px-4 py-2 text-sm font-medium hover-elevate rounded-md flex items-center gap-1" data-testid="link-nav-compare">
+            <GitCompare className="w-4 h-4" />
+            Compare
           </Link>
           <Link href="/categories" className="px-4 py-2 text-sm font-medium hover-elevate rounded-md" data-testid="link-nav-categories">
             Categories

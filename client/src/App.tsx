@@ -14,6 +14,8 @@ import Categories from "@/pages/Categories";
 import Search from "@/pages/Search";
 import Sponsors from "@/pages/Sponsors";
 import AdminPanel from "@/pages/AdminPanel";
+import MarketDashboard from "@/pages/MarketDashboard";
+import Compare from "@/pages/Compare";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -26,6 +28,8 @@ function Router() {
       <Route path="/search" component={Search} />
       <Route path="/sponsors" component={Sponsors} />
       <Route path="/admin" component={AdminPanel} />
+      <Route path="/dashboard" component={MarketDashboard} />
+      <Route path="/compare" component={Compare} />
       <Route component={NotFound} />
     </Switch>
   );
