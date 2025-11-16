@@ -14,12 +14,14 @@ import Categories from "@/pages/Categories";
 import Search from "@/pages/Search";
 import Sponsors from "@/pages/Sponsors";
 import AdminPanel from "@/pages/AdminPanel";
+import TrendingDashboard from "@/pages/TrendingDashboard";
 import NotFound from "@/pages/not-found";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/trending" component={TrendingDashboard} />
       <Route path="/tool/:slug" component={Tool} />
       <Route path="/submit" component={Submit} />
       <Route path="/categories" component={Categories} />

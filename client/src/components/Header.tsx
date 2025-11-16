@@ -21,6 +21,9 @@ export default function Header() {
           <Link href="/" className="px-4 py-2 text-sm font-medium hover-elevate rounded-md" data-testid="link-nav-home">
             Home
           </Link>
+          <Link href="/trending" className="px-4 py-2 text-sm font-medium hover-elevate rounded-md bg-gradient-to-r from-purple-600 to-pink-600 text-white" data-testid="link-nav-trending">
+            🔥 Trending
+          </Link>
           <Link href="/categories" className="px-4 py-2 text-sm font-medium hover-elevate rounded-md" data-testid="link-nav-categories">
             Categories
           </Link>
