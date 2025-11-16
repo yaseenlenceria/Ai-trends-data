@@ -607,6 +607,263 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ===============================================
+  // ADMIN ENDPOINTS - TOOLS MANAGEMENT
+  // ===============================================
+
+  // POST /api/admin/tools - Create a new tool directly (admin only)
+  app.post("/api/admin/tools", async (req, res) => {
+    try {
+      const {
+        name,
+        tagline,
+        description,
+        logo,
+        categoryId,
+        website,
+        twitter,
+        github,
+        screenshots,
+        pricing,
+        status = "approved",
+      } = req.body;
+
+      if (!name || !tagline || !logo || !categoryId) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+
+      // Create slug from name
+      const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+
+      // Create tool
+      const newTool = await db
+        .insert(tools)
+        .values({
+          name,
+          slug,
+          tagline,
+          description: description || null,
+          logo,
+          categoryId,
+          website: website || null,
+          twitter: twitter || null,
+          github: github || null,
+          screenshots: screenshots || null,
+          pricing: pricing || null,
+          status,
+          upvotes: 0,
+          views: 0,
+          viewsWeek: 0,
+          viewsToday: 0,
+          trendPercentage: 0,
+        })
+        .returning();
+
+      res.json(newTool[0]);
+    } catch (error) {
+      console.error("Error creating tool:", error);
+      res.status(500).json({ error: "Failed to create tool" });
+    }
+  });
+
+  // PUT /api/admin/tools/:id - Update an existing tool (admin only)
+  app.put("/api/admin/tools/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const {
+        name,
+        tagline,
+        description,
+        logo,
+        categoryId,
+        website,
+        twitter,
+        github,
+        screenshots,
+        pricing,
+        status,
+      } = req.body;
+
+      // Generate new slug if name changed
+      let updateData: any = {
+        tagline,
+        description: description || null,
+        logo,
+        categoryId,
+        website: website || null,
+        twitter: twitter || null,
+        github: github || null,
+        screenshots: screenshots || null,
+        pricing: pricing || null,
+        updatedAt: new Date(),
+      };
+
+      if (name) {
+        updateData.name = name;
+        updateData.slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      }
+
+      if (status) {
+        updateData.status = status;
+      }
+
+      const updatedTool = await db
+        .update(tools)
+        .set(updateData)
+        .where(eq(tools.id, id))
+        .returning();
+
+      if (updatedTool.length === 0) {
+        return res.status(404).json({ error: "Tool not found" });
+      }
+
+      res.json(updatedTool[0]);
+    } catch (error) {
+      console.error("Error updating tool:", error);
+      res.status(500).json({ error: "Failed to update tool" });
+    }
+  });
+
+  // DELETE /api/admin/tools/:id - Delete a tool (admin only)
+  app.delete("/api/admin/tools/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const deleted = await db
+        .delete(tools)
+        .where(eq(tools.id, id))
+        .returning();
+
+      if (deleted.length === 0) {
+        return res.status(404).json({ error: "Tool not found" });
+      }
+
+      res.json({ success: true, deleted: deleted[0] });
+    } catch (error) {
+      console.error("Error deleting tool:", error);
+      res.status(500).json({ error: "Failed to delete tool" });
+    }
+  });
+
+  // GET /api/admin/tools - Get all tools including non-approved (admin only)
+  app.get("/api/admin/tools", async (req, res) => {
+    try {
+      if (!hasDatabase || !db) {
+        return res.json([]);
+      }
+
+      const allTools = await db
+        .select()
+        .from(tools)
+        .orderBy(desc(tools.createdAt));
+
+      res.json(allTools);
+    } catch (error) {
+      console.error("Error fetching all tools:", error);
+      res.status(500).json({ error: "Failed to fetch tools" });
+    }
+  });
+
+  // ===============================================
+  // ADMIN ENDPOINTS - CATEGORIES MANAGEMENT
+  // ===============================================
+
+  // POST /api/admin/categories - Create a new category (admin only)
+  app.post("/api/admin/categories", async (req, res) => {
+    try {
+      const { name, icon, description } = req.body;
+
+      if (!name || !icon) {
+        return res.status(400).json({ error: "Name and icon are required" });
+      }
+
+      // Create slug from name
+      const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+
+      const newCategory = await db
+        .insert(categories)
+        .values({
+          name,
+          slug,
+          icon,
+          description: description || null,
+        })
+        .returning();
+
+      res.json(newCategory[0]);
+    } catch (error) {
+      console.error("Error creating category:", error);
+      res.status(500).json({ error: "Failed to create category" });
+    }
+  });
+
+  // PUT /api/admin/categories/:id - Update a category (admin only)
+  app.put("/api/admin/categories/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { name, icon, description } = req.body;
+
+      let updateData: any = {
+        icon,
+        description: description || null,
+      };
+
+      if (name) {
+        updateData.name = name;
+        updateData.slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      }
+
+      const updated = await db
+        .update(categories)
+        .set(updateData)
+        .where(eq(categories.id, id))
+        .returning();
+
+      if (updated.length === 0) {
+        return res.status(404).json({ error: "Category not found" });
+      }
+
+      res.json(updated[0]);
+    } catch (error) {
+      console.error("Error updating category:", error);
+      res.status(500).json({ error: "Failed to update category" });
+    }
+  });
+
+  // DELETE /api/admin/categories/:id - Delete a category (admin only)
+  app.delete("/api/admin/categories/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      // Check if category has tools
+      const toolsInCategory = await db
+        .select()
+        .from(tools)
+        .where(eq(tools.categoryId, id))
+        .limit(1);
+
+      if (toolsInCategory.length > 0) {
+        return res.status(400).json({
+          error: "Cannot delete category with existing tools"
+        });
+      }
+
+      const deleted = await db
+        .delete(categories)
+        .where(eq(categories.id, id))
+        .returning();
+
+      if (deleted.length === 0) {
+        return res.status(404).json({ error: "Category not found" });
+      }
+
+      res.json({ success: true, deleted: deleted[0] });
+    } catch (error) {
+      console.error("Error deleting category:", error);
+      res.status(500).json({ error: "Failed to delete category" });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;

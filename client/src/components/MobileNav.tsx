@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Home, Search, Plus, Grid3x3, User } from "lucide-react";
+import { Home, Search, Plus, Grid3x3, Settings } from "lucide-react";
 
 export default function MobileNav() {
   const [location] = useLocation();
@@ -9,7 +9,7 @@ export default function MobileNav() {
     { href: "/search", icon: Search, label: "Search" },
     { href: "/submit", icon: Plus, label: "Submit", isPrimary: true },
     { href: "/categories", icon: Grid3x3, label: "Categories" },
-    { href: "/profile", icon: User, label: "Profile" },
+    { href: "/admin", icon: Settings, label: "Admin" },
   ];
 
   return (
