@@ -13,6 +13,7 @@ import Submit from "@/pages/Submit";
 import Categories from "@/pages/Categories";
 import Search from "@/pages/Search";
 import Sponsors from "@/pages/Sponsors";
+import AdminPanel from "@/pages/AdminPanel";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -24,6 +25,7 @@ function Router() {
       <Route path="/categories" component={Categories} />
       <Route path="/search" component={Search} />
       <Route path="/sponsors" component={Sponsors} />
+      <Route path="/admin" component={AdminPanel} />
       <Route component={NotFound} />
     </Switch>
   );
