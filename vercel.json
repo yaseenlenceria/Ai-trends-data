@@ -6,5 +6,19 @@
       "source": "/((?!api/|assets/|favicon).*)",
       "destination": "/index.html"
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/discover-tools",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/update-metrics",
+      "schedule": "0 */6 * * *"
+    },
+    {
+      "path": "/api/cron/refresh-tools",
+      "schedule": "0 4 * * 0"
+    }
   ]
 }

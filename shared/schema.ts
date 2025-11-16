@@ -152,3 +152,110 @@ export const submissions = pgTable("submissions", {
 export const insertSubmissionSchema = createInsertSchema(submissions);
 export type Submission = typeof submissions.$inferSelect;
 export type InsertSubmission = z.infer<typeof insertSubmissionSchema>;
+
+// Tool Metrics table (for trend analysis and popularity tracking)
+export const toolMetrics = pgTable("tool_metrics", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  toolId: varchar("tool_id").notNull().references(() => tools.id, { onDelete: "cascade" }),
+  date: timestamp("date").notNull(),
+  dailyViews: integer("daily_views").default(0).notNull(),
+  weeklyViews: integer("weekly_views").default(0).notNull(),
+  monthlyViews: integer("monthly_views").default(0).notNull(),
+  githubStars: integer("github_stars").default(0),
+  trafficScore: integer("traffic_score").default(0).notNull(),
+  trendScore: integer("trend_score").default(0).notNull(),
+  popularityScore: integer("popularity_score").default(0).notNull(),
+  serpPosition: integer("serp_position"),
+  socialMentions: integer("social_mentions").default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertToolMetricsSchema = createInsertSchema(toolMetrics);
+export type ToolMetrics = typeof toolMetrics.$inferSelect;
+export type InsertToolMetrics = z.infer<typeof insertToolMetricsSchema>;
+
+// Discovered Tools table (tools found by automation before processing)
+export const discoveryStatusEnum = pgEnum("discovery_status", ["discovered", "processing", "processed", "failed"]);
+
+export const discoveredTools = pgTable("discovered_tools", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  url: text("url").notNull().unique(),
+  name: text("name"),
+  source: text("source").notNull(), // Where it was discovered (e.g., "jina-search", "manual")
+  rawData: jsonb("raw_data").$type<any>(), // Raw scraped data
+  status: discoveryStatusEnum("status").default("discovered").notNull(),
+  processedToolId: varchar("processed_tool_id").references(() => tools.id),
+  errorMessage: text("error_message"),
+  discoveredAt: timestamp("discovered_at").defaultNow().notNull(),
+  processedAt: timestamp("processed_at"),
+});
+
+export const insertDiscoveredToolSchema = createInsertSchema(discoveredTools);
+export type DiscoveredTool = typeof discoveredTools.$inferSelect;
+export type InsertDiscoveredTool = z.infer<typeof insertDiscoveredToolSchema>;
+
+// Automation Logs table (for tracking cron jobs and automation tasks)
+export const automationLogTypeEnum = pgEnum("automation_log_type", [
+  "discovery", "scraping", "classification", "metrics-update", "tool-refresh", "bulk-import"
+]);
+export const automationLogStatusEnum = pgEnum("automation_log_status", ["running", "success", "failed", "partial"]);
+
+export const automationLogs = pgTable("automation_logs", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  type: automationLogTypeEnum("type").notNull(),
+  status: automationLogStatusEnum("status").notNull(),
+  message: text("message"),
+  metadata: jsonb("metadata").$type<{
+    toolsDiscovered?: number;
+    toolsProcessed?: number;
+    toolsFailed?: number;
+    duration?: number;
+    errors?: string[];
+    [key: string]: any;
+  }>(),
+  startedAt: timestamp("started_at").notNull(),
+  completedAt: timestamp("completed_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertAutomationLogSchema = createInsertSchema(automationLogs);
+export type AutomationLog = typeof automationLogs.$inferSelect;
+export type InsertAutomationLog = z.infer<typeof insertAutomationLogSchema>;
+
+// Tool Tags table (for better categorization and search)
+export const toolTags = pgTable("tool_tags", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  toolId: varchar("tool_id").notNull().references(() => tools.id, { onDelete: "cascade" }),
+  tag: text("tag").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertToolTagSchema = createInsertSchema(toolTags);
+export type ToolTag = typeof toolTags.$inferSelect;
+export type InsertToolTag = z.infer<typeof insertToolTagSchema>;
+
+// Tool Features table (extracted features from AI analysis)
+export const toolFeatures = pgTable("tool_features", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  toolId: varchar("tool_id").notNull().references(() => tools.id, { onDelete: "cascade" }),
+  feature: text("feature").notNull(),
+  description: text("description"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertToolFeatureSchema = createInsertSchema(toolFeatures);
+export type ToolFeature = typeof toolFeatures.$inferSelect;
+export type InsertToolFeature = z.infer<typeof insertToolFeatureSchema>;
+
+// Similar Tools table (for recommendations based on embeddings)
+export const similarTools = pgTable("similar_tools", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  toolId: varchar("tool_id").notNull().references(() => tools.id, { onDelete: "cascade" }),
+  similarToolId: varchar("similar_tool_id").notNull().references(() => tools.id, { onDelete: "cascade" }),
+  similarityScore: integer("similarity_score").notNull(), // 0-100
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertSimilarToolSchema = createInsertSchema(similarTools);
+export type SimilarTool = typeof similarTools.$inferSelect;
+export type InsertSimilarTool = z.infer<typeof insertSimilarToolSchema>;
