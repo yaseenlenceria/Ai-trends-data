@@ -1592,7 +1592,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
     initialData: FALLBACK_TOOLS,
   });
 
-  const tools = toolsData ?? FALLBACK_TOOLS;
+  // Use fallback data if API returns empty array (no database configured)
+  const tools = (toolsData && toolsData.length > 0) ? toolsData : FALLBACK_TOOLS;
 
   const {
     data: categoriesData,
@@ -1608,7 +1609,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
     initialData: FALLBACK_CATEGORIES,
   });
 
-  const categories = categoriesData ?? FALLBACK_CATEGORIES;
+  // Use fallback data if API returns empty array (no database configured)
+  const categories = (categoriesData && categoriesData.length > 0) ? categoriesData : FALLBACK_CATEGORIES;
 
   const {
     data: sponsorsData,
@@ -1623,7 +1625,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
     initialData: FALLBACK_SPONSORS,
   });
 
-  const sponsors = sponsorsData ?? FALLBACK_SPONSORS;
+  // Use fallback data if API returns empty array (no database configured)
+  const sponsors = (sponsorsData && sponsorsData.length > 0) ? sponsorsData : FALLBACK_SPONSORS;
 
   useEffect(() => {
     if (toolsError) {
